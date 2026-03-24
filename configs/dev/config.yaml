@@ -1,15 +1,6 @@
 env: dev
-server_config:
-  port: "8080"
-db_config:
-  user: "template_user"
-  name: "template_db"
-  password: "template_password"
-  migrations_path: "./migrations"
-  hosts:
-    host: "postgres"
-    port: 5432
 service_config:
-  host: http://localhost:8080
-jwt:
-  secret_key: "your-jwt-secret-key-should-be-at-least-32-chars-long"
+  host: https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+cli_config:
+  mnemonic: ""
+  password: ""

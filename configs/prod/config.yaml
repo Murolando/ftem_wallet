@@ -1,14 +1,6 @@
 env: prod
-server_config:
-  port: "8080"
-db_config:
-  user: "template_prod_user"
-  name: "template_prod_db"
-  migrations_path: "./migrations"
-  hosts:
-    host: "postgres"
-    port: 5432
 service_config:
-  host: https://your-domain.com
-jwt:
-  secret_key: "prod-jwt-secret-key-should-be-at-least-32-chars-long"
+  host: https://mainnet.infura.io/v3/YOUR_PROJECT_ID
+cli_config:
+  mnemonic: ""
+  password: ""

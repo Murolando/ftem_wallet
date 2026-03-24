@@ -13,38 +13,19 @@ const (
 	EmptyPath = "EMPTY_PATH"
 )
 
-type ServerConfig struct {
-	Port string `mapstructure:"port"`
-}
-
-type DBHosts struct {
-	DBHost string `mapstructure:"host"`
-	DBPort int    `mapstructure:"port"`
-}
-
-type DBConfig struct {
-	DBUser         string  `mapstructure:"user"`
-	DBName         string  `mapstructure:"name"`
-	DBPassword     string  `mapstructure:"password"`
-	DBHosts        DBHosts `mapstructure:"hosts"`
-	MigrationsPath string  `mapstructure:"migrations_path"`
-}
-
-type JWT struct {
-	SecretKey string `mapstructure:"secret_key"`
-}
-
 type ServiceConfig struct {
 	Host string `mapstructure:"host"`
 }
 
+type CLIConfig struct {
+	Mnemonic string `mapstructure:"mnemonic"`
+	Password string `mapstructure:"password"`
+}
+
 type Config struct {
 	Environment   string        `mapstructure:"env"`
-	Line          int64         `mapstructure:"line"`
-	ServerConfig  ServerConfig  `mapstructure:"server_config"`
-	DBConfig      DBConfig      `mapstructure:"db_config"`
 	ServiceConfig ServiceConfig `mapstructure:"service_config"`
-	JWT           JWT           `mapstructure:"jwt"`
+	CLIConfig     CLIConfig     `mapstructure:"cli_config"`
 }
 
 func ParseConfig() (*Config, error) {
@@ -52,6 +33,8 @@ func ParseConfig() (*Config, error) {
 
 	// Get config path from flags, if flags not exist get from env
 	path := pflag.String("app-cfg", EmptyPath, "config path")
+	mnemonic := pflag.String("mnemonic", "", "mnemonic phrase for wallet authorization")
+	password := pflag.String("password", "", "password for wallet")
 	pflag.Parse()
 
 	if *path == EmptyPath {
@@ -70,14 +53,16 @@ func ParseConfig() (*Config, error) {
 		return nil, errors.New("failed to pull config")
 	}
 
+	// Override CLI config with command line flags
+	if *mnemonic != "" {
+		cfg.CLIConfig.Mnemonic = *mnemonic
+	}
+	if *password != "" {
+		cfg.CLIConfig.Password = *password
+	}
+
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-
-	// JWT
-	cfg.JWT.SecretKey = v.GetString("jwt.secret_key")
-
-	// DB PASSWORD
-	cfg.DBConfig.DBPassword = v.GetString("db_password")
 
 	slog.Info("config", "cfg:", cfg)
 	return cfg, nil
